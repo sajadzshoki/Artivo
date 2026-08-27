@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { photoSpots } from '#shared/data/content'
+import { photoSpots } from '#shared/data/spots'
 
 // تیزر لوکیشن‌های عکاسی — موزائیک سه‌تایی
 const spots = photoSpots.slice(0, 3)
@@ -20,7 +20,7 @@ const spots = photoSpots.slice(0, 3)
       </div>
 
       <div class="mosaic">
-        <NuxtLink v-for="s in spots" :key="s.id" to="/spots" class="tile">
+        <NuxtLink v-for="s in spots" :key="s.id" :to="`/spots/${s.id}`" class="tile">
           <span class="tile__img" :style="{ background: `linear-gradient(160deg, ${s.accent}22, ${s.accent}55)` }">
             <img v-if="s.image" :src="s.image" :alt="s.name" loading="lazy" width="640" height="760">
           </span>

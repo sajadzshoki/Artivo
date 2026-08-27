@@ -279,8 +279,8 @@ export const portfolioItems: PortfolioItem[] = [
     description: 'از مجموعه مستند «بازارهای ایران»؛ نور تاشوی حوض‌خانه‌ها و رنگ بارهای بازار بزرگ.',
     category: 'architecture',
     tags: ['مستند', 'شهری'],
-    cover: '/images/spot-stairs.jpg',
-    images: ['/images/spot-stairs.jpg'],
+    cover: '/images/portfolio/bazaar-light.jpg',
+    images: ['/images/portfolio/bazaar-light.jpg'],
     year: '۱۴۰۲',
   },
   {

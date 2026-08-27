@@ -18,6 +18,21 @@ export default defineNuxtConfig({
     typeCheck: false,
   },
 
+  // ── تنظیمات زمان اجرا ──
+  // کلیدهای Neshan از متغیرهای محیطی می‌آیند (.env) — هرگز هاردکد نمی‌شوند.
+  // NUXT_NESHAN_API_KEY        → فقط سمت سرور (REST API نشان؛ ژئوکد معکوس)
+  // NUXT_PUBLIC_NESHAN_MAP_KEY → کلید وب SDK (خالی بودن آن یعنی نقشه با
+  //                               جایگزینِ بدون‌کلید اجرا می‌شود)
+  runtimeConfig: {
+    neshanApiKey: '',
+    public: {
+      neshanMapKey: '',
+      neshanProvider: 'neshan',
+      neshanSdkUrl: 'https://static.neshan.org/maps/neshan-map-v1.1.0.js',
+      neshanSdkCss: 'https://static.neshan.org/maps/neshan-map-v1.1.0.css',
+    },
+  },
+
   app: {
     head: {
       htmlAttrs: { lang: 'fa', dir: 'rtl' },

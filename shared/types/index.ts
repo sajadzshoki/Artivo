@@ -391,15 +391,49 @@ export interface Creative {
   featured?: boolean
 }
 
+// ─── Photography Locations ───────────────────────────────────
+
+export type SpotCategoryId =
+  | 'portrait'
+  | 'landscape'
+  | 'street'
+  | 'architecture'
+  | 'nature'
+  | 'sunset'
+  | 'night'
+  | 'product'
+  | 'fashion'
+  | 'wedding'
+
+/** یک عکس برای لوکیشن عکاسی (تیم آرتیوو یا کاربران) */
+export interface SpotPhoto {
+  id: string
+  url: string
+  author: string
+  /** عکسِ افزوده‌ی کاربر */
+  user?: boolean
+}
+
 export interface PhotoSpot {
   id: string
   name: string
   city: string
-  bestTime: string
+  address: string
+  description: string
   tip: string
+  bestTime: string
+  location: { lat: number; lng: number }
+  categories: SpotCategoryId[]
   tags: string[]
-  image?: string
+  photos: SpotPhoto[]
+  rating: number
+  ratingsCount: number
   accent: string
+  /** کاور کارت — در نبودش از گرادیان accent استفاده می‌شود */
+  image?: string
+  featured?: boolean
+  /** لوکیشن‌های افزوده‌ی کاربر (Phase 4: localStorage) */
+  userAdded?: boolean
 }
 
 export interface HomeCategory {
