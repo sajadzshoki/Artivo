@@ -3,6 +3,7 @@ import { colorPalettes } from '#shared/config/palettes'
 import { fontPairings } from '#shared/config/font-pairings'
 import { projectTypeMap, sizeConfigs } from '#shared/config/project-types'
 import { pricingConfig } from '#shared/services/pricing'
+import { creativesById as creativesByIdMap } from '#shared/data/portfolio'
 
 // ─────────────────────────────────────────────────────────────
 // useRequestSummary · ساخت خلاصه‌ی بخش‌بخششده از وضعیت ویزارد
@@ -21,10 +22,17 @@ export interface SummarySection {
 export function useRequestSummary() {
   const { state } = useProjectRequest()
   const { estimate } = usePricing()
+  const creativeIndex = creativesByIdMap()
 
   const sections = computed<SummarySection[]>(() => {
     const s = state.value
     const out: SummarySection[] = []
+
+    // ۰ — خلاق منتخب (اختیاری؛ بدون گام ویرایش)
+    if (s.creativeId) {
+      const sel = creativeIndex.get(s.creativeId)
+      if (sel) out.push({ step: -1, title: 'خلاق منتخب', icon: 'user', lines: [sel.name, sel.role] })
+    }
 
     // ۱ — نوع پروژه
     out.push({

@@ -17,7 +17,7 @@ function edit(stepIndex: number) {
     </header>
 
     <div class="rv">
-      <article v-for="s in sections" :key="s.step" class="rv__sec">
+      <article v-for="s in sections" :key="s.step" class="rv__sec" :class="{ 'rv__sec--sel': s.step === -1 }">
         <span class="rv__num latin">{{ String(s.step + 1).padStart(2, '0') }}</span>
         <div class="rv__body">
           <span class="rv__title"><AIcon :name="s.icon" :size="15" /> {{ s.title }}</span>
@@ -26,7 +26,7 @@ function edit(stepIndex: number) {
             <i v-for="(c, i) in s.swatches" :key="i" :style="{ background: c }" />
           </span>
         </div>
-        <button type="button" class="rv__edit" :aria-label="`ویرایش ${s.title}`" @click="edit(s.step)">
+        <button v-if="s.step >= 0" type="button" class="rv__edit" :aria-label="`ویرایش ${s.title}`" @click="edit(s.step)">
           <AIcon name="pen" :size="14" />
           ویرایش
         </button>
@@ -57,6 +57,7 @@ function edit(stepIndex: number) {
   border-bottom: 1px solid var(--line);
 }
 .rv__sec:first-child { border-top: 1px solid var(--line-strong); }
+.rv__sec--sel { background: var(--indigo-soft); border-radius: var(--r-sm); padding-inline: 0.6rem; margin-block: 0.35rem; border-bottom: none !important; }
 
 .rv__num {
   font-size: 0.95rem;

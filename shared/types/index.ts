@@ -134,6 +134,95 @@ export interface PricingConfig {
   customMaxRatio: number
 }
 
+// ─── Creatives · Marketplace ─────────────────────────────────
+
+/** نوع خلاق — هر کاربر می‌تواند هم‌زمان کارفرما و خلاق باشد */
+export type CreativeKind = 'designer' | 'photographer'
+
+export const creativeKindLabels: Record<CreativeKind, string> = {
+  designer: 'طراح گرافیک',
+  photographer: 'عکاس',
+}
+
+/** دسته‌بندی سرویس‌ها/نمونه‌کارها (پوستر، پرتره، معماری و…) */
+export type ServiceCategory =
+  | 'poster'
+  | 'logo'
+  | 'social'
+  | 'branding'
+  | 'packaging'
+  | 'menu'
+  | 'ui'
+  | 'photoEdit'
+  | 'portrait'
+  | 'product'
+  | 'event'
+  | 'architecture'
+
+export interface Creative {
+  id: string
+  name: string
+  kind: CreativeKind
+  role: string
+  city: string
+  rating: number
+  projectsDone: number
+  startingPrice: number
+  skills: string[]
+  categories: ServiceCategory[]
+  bio: string
+  experienceYears: number
+  /** سوابق — بندهای کوتاه ادیتوریال */
+  experience: string[]
+  languages: string[]
+  avatar: string
+  /** کاور کارت در فهرست‌ها — در نبودش از accent گرادیان می‌سازیم */
+  image?: string
+  accent: string
+  featured?: boolean
+  responseTime: string
+  memberSince: string
+}
+
+export interface PortfolioItem {
+  id: string
+  creativeId: string
+  title: string
+  description: string
+  category: ServiceCategory
+  tags: string[]
+  cover: string
+  images: string[]
+  year: string
+  client?: string
+}
+
+export interface CreativeService {
+  id: string
+  creativeId: string
+  title: string
+  description: string
+  category: ServiceCategory
+  startingPrice: number
+  /** مهلت تحویل به روز */
+  deliveryDays: number
+  revisions: number
+  features: string[]
+  portfolioItemIds: string[]
+  popular?: boolean
+}
+
+export interface Review {
+  id: string
+  creativeId: string
+  author: string
+  /** عنوان پروژه‌ای که نظر مربوط به آن است */
+  project: string
+  rating: number
+  date: string
+  text: string
+}
+
 // ─── Wizard state ─────────────────────────────────────────────
 
 export interface BriefFile {
@@ -149,6 +238,8 @@ export interface ReferenceLinks {
 }
 
 export interface ProjectRequestState {
+  /** خلاق منتخب (اختیاری — از پروفایل/سرویس پر می‌شود) */
+  creativeId?: string | null
   type: ProjectTypeId | null
   size: {
     presetId: string | null

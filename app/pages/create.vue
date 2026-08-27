@@ -2,6 +2,7 @@
 import type { ProjectTypeId } from '#shared/types'
 import { projectTypeMap } from '#shared/config/project-types'
 import { wizardSteps, useProjectRequest } from '~/composables/useProjectRequest'
+import { creatives } from '#shared/data/content'
 import StepType from '~/components/create/StepType.vue'
 import StepSize from '~/components/create/StepSize.vue'
 import StepVisual from '~/components/create/StepVisual.vue'
@@ -31,10 +32,12 @@ const stepComponents = { type: StepType, size: StepSize, visual: StepVisual, fon
 const currentComponent = computed(() => stepComponents[wizardSteps[step.value]?.key ?? 'type'])
 const isReview = computed(() => step.value === wizardSteps.length - 1)
 
-// میان‌بر از خانه: /create?type=poster
+// میان‌بر از خانه و سرویس‌ها: /create?type=poster&creative=sara-mohammadi
 onMounted(() => {
   const t = route.query.type as ProjectTypeId | undefined
   if (t && t in projectTypeMap && state.value.type === null) setType(t)
+  const c = route.query.creative as string | undefined
+  if (c && creatives.some(x => x.id === c)) state.value.creativeId = c
 })
 
 function onNext() {

@@ -13,6 +13,7 @@ const links = [
   { to: '/', label: 'خانه' },
   { to: '/jobs', label: 'پروژه‌ها' },
   { to: '/creatives', label: 'خلاق‌ها' },
+  { to: '/services', label: 'سرویس‌ها' },
   { to: '/spots', label: 'لوکیشن عکاسی' },
 ]
 </script>

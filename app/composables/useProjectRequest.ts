@@ -23,6 +23,7 @@ export const wizardSteps = [
 
 function initialState(): ProjectRequestState {
   return {
+    creativeId: null,
     type: null,
     size: { presetId: null, medium: null, custom: { width: null, height: null, unit: 'cm' } },
     visual: { paletteId: null, customPrimary: '#FF5A3C', customSecondary: '#211C15', isCustom: false },
