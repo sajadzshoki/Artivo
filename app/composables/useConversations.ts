@@ -13,6 +13,7 @@ export function useConversations() {
   const items = useState<ConversationSummary[]>('conv-items', () => [])
   const totalUnread = useState<number>('conv-unread', () => 0)
   const ready = useState<boolean>('conv-ready', () => false)
+  const error = useState<boolean>('conv-error', () => false)
 
   async function refresh() {
     try {
@@ -20,13 +21,14 @@ export function useConversations() {
       items.value = res.items
       totalUnread.value = res.totalUnread
       ready.value = true
+      error.value = false
     }
     catch {
-      /* مهمان — بی‌خیال */
+      if (!ready.value) error.value = true
     }
   }
 
-  return { items, totalUnread, ready, refresh }
+  return { items, totalUnread, ready, error, refresh }
 }
 
 /** گفتگوی واحد — polling + optimistic send + typing */

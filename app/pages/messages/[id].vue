@@ -100,7 +100,25 @@ onMounted(() => {
     const el = scroller.value
     if (el) el.scrollTop = el.scrollHeight
   }, 300)
+  // کیبورد موبایل: با باز/بسته شدن، اگر کاربر پایین چسبیده بمان
+  const vv = window.visualViewport
+  if (vv) {
+    vv.addEventListener('resize', onVVResize)
+    vv.addEventListener('scroll', onVVResize)
+  }
 })
+onUnmounted(() => {
+  const vv = window.visualViewport
+  if (vv) {
+    vv.removeEventListener('resize', onVVResize)
+    vv.removeEventListener('scroll', onVVResize)
+  }
+})
+function onVVResize() {
+  if (!stickToBottom.value) return
+  const el = scroller.value
+  if (el) requestAnimationFrame(() => { el.scrollTop = el.scrollHeight })
+}
 
 function dayLabel(iso: string): string {
   const d = new Date(iso)
@@ -367,7 +385,7 @@ useHead(() => ({ title: `${peerName.value} — گفتگو | آرتیوو` }))
   align-items: center;
   justify-content: flex-end;
   gap: 0.25rem;
-  font-size: 0.58rem;
+  font-size: 0.63rem;
   opacity: 0.75;
 }
 .bubble__read { color: var(--green); }

@@ -11,8 +11,8 @@
   --paper: #FFFDF8;            /* کاغذ — سطح‌های بالا آمده */
   --ink: #211C15;              /* جوهر تیره */
   --ink-soft: #4A443A;
-  --muted: #8B8172;            /* متن ثانویه */
-  --faint: #B4AA99;
+  --muted: #756C5A;            /* متن ثانویه — کنتراست ≥۴.۵:۱ */
+  --faint: #9A9080;            /* متن ثالث/متادیتا — کنتراست ≥۳:۱ */
 
   --line: #E7DFCF;             /* خطوط ظریف */
   --line-strong: #D9CFBA;
@@ -28,7 +28,10 @@
   --amber: #E8A33D;
   --amber-soft: #FCF1DD;
 
-  /* ── تایپوگرافی ── */
+  /* ── تایپوگرافی ──
+     معماری فونت: همه‌جا از توکن استفاده می‌شود؛ تعویض فونت فارسی
+     فقط با تغییر همین دو متغیر انجام می‌شود (خانواده‌های بیشتر برای
+     پیش‌نمایش انتخاب فونت ویزارد در nuxt.config بارگذاری می‌شوند). */
   --font-fa: 'Vazirmatn', 'Segoe UI', Tahoma, sans-serif;
   --font-latin: 'Fraunces', Georgia, serif;
 
@@ -112,6 +115,14 @@ img, svg, video { display: block; max-width: 100%; }
 input, button, textarea, select { font: inherit; color: inherit; }
 button { cursor: pointer; background: none; border: none; padding: 0; }
 a { color: inherit; text-decoration: none; }
+
+/* لمس: حذف تأخیر دابل‌تپ و هایلایت شفاف روی کنترل‌ها */
+button, a, [role='button'], input, select, label { touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+
+/* جلوگیری از زوم خودکار iOS هنگام فوکوس (۱۶px آستانه‌ی سافاری است) */
+@media (pointer: coarse) {
+  input, textarea, select { font-size: 1rem !important; }
+}
 ul, ol { list-style: none; padding: 0; }
 h1, h2, h3, h4 { line-height: 1.4; font-weight: 800; overflow-wrap: break-word; }
 p { overflow-wrap: break-word; }

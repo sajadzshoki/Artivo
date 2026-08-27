@@ -7,7 +7,7 @@ import { useConversations } from '~/composables/useConversations'
 useHead({ title: 'گفتگوها — آرتیوو' })
 definePageMeta({ middleware: 'auth' })
 
-const { items, totalUnread, ready, refresh } = useConversations()
+const { items, totalUnread, ready, error, refresh } = useConversations()
 const { user } = useAuth()
 
 const timeFmt = new Intl.DateTimeFormat('fa-IR', { hour: '2-digit', minute: '2-digit' })
@@ -36,7 +36,15 @@ onMounted(refresh)
       <p v-if="totalUnread" class="ms__unread t-caption">{{ new Intl.NumberFormat('fa-IR').format(totalUnread) }} پیام خوانده‌نشده</p>
     </header>
 
-    <div v-if="!ready" class="ms__list">
+    <AEmptyState
+        v-if="error && !ready"
+        icon="zap"
+        title="گفتگوها بارگذاری نشدند"
+        description="ارتباط برقرار نشد؛ دوباره تلاش کن."
+      >
+        <AButton size="sm" @click="refresh()">تلاش دوباره</AButton>
+      </AEmptyState>
+      <div v-else-if="!ready" class="ms__list">
       <div v-for="i in 4" :key="i" class="panel" style="padding:0.9rem">
         <ASkeleton h="2.8rem" radius="12px" />
       </div>

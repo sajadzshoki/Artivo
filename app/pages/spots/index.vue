@@ -172,7 +172,7 @@ function distanceOf(spotId: string): number | null {
               <AIcon name="x" :size="16" />
             </button>
             <div class="mapcard__img">
-              <img v-if="selectedCover" :src="selectedCover" :alt="selectedSpot.name">
+              <img v-if="selectedCover" :src="selectedCover" :alt="selectedSpot.name" loading="lazy" decoding="async">
             </div>
             <div class="mapcard__body">
               <strong class="mapcard__name">{{ selectedSpot.name }}</strong>

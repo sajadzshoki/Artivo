@@ -33,7 +33,7 @@ const items = computed(() => (creative.value ? portfolioOf(creative.value.id) : 
 
     <header class="phead" v-reveal>
       <div class="phead__id">
-        <img :src="creative.avatar" :alt="creative.name" width="56" height="56">
+        <img :src="creative.avatar" :alt="creative.name" width="56" height="56" loading="lazy" decoding="async">
         <div>
           <p class="overline">Portfolio — {{ fa.format(items.length) }} اثر</p>
           <h1 class="t-h1">{{ creativeKindLabels[creative.kind] === 'عکاس' ? 'دوربین' : 'میزکار' }} {{ creative.name }}</h1>

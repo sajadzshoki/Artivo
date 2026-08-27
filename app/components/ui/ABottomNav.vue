@@ -99,9 +99,9 @@ watch(() => user.value?.id, (id) => { if (id) void refresh() })
   background: var(--coral);
   color: #fff;
   border-radius: 99px;
-  font-size: 0.55rem;
+  font-size: 0.62rem;
   font-weight: 900;
-  padding-inline: 0.2rem;
+  padding-inline: 0.25rem;
   border: 1.5px solid var(--bg);
 }
 .a-bnav__dot {

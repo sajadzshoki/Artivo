@@ -302,6 +302,10 @@ function startNew() {
   color: var(--muted);
   white-space: nowrap;
 }
+/* صفحه‌های باریک: قیمت از فوتر حذف می‌شود — در خلاصه و بازبینی هست */
+@media (max-width: 400px) {
+  .wiz__price { display: none; }
+}
 
 .step-enter-active { transition: opacity 0.3s, transform 0.3s var(--ease-out); }
 .step-leave-active { transition: opacity 0.16s ease-in, transform 0.16s; }

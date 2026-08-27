@@ -11,12 +11,14 @@ const props = withDefaults(defineProps<{
 }>(), { tall: false, showDesc: false })
 
 const emit = defineEmits<{ open: [id: string] }>()
+const imgFailed = ref(false)
 </script>
 
 <template>
   <button type="button" class="pf" :class="{ 'pf--tall': tall }" @click="emit('open', item.id)">
     <span class="pf__cover">
-      <img :src="item.cover" :alt="item.title" loading="lazy" width="640" height="800">
+      <img v-if="!imgFailed" :src="item.cover" :alt="item.title" loading="lazy" decoding="async" width="640" height="800" @error="imgFailed = true">
+      <span v-else class="pf__fallback" aria-hidden="true"><AIcon name="image" :size="22" /></span>
       <span class="pf__count" v-if="item.images.length > 1">
         <AIcon name="image" :size="12" />
         {{ new Intl.NumberFormat('fa-IR').format(item.images.length) }}
@@ -45,8 +47,24 @@ const emit = defineEmits<{ open: [id: string] }>()
 }
 .pf:hover { transform: translateY(-3px); box-shadow: var(--shadow-pop); }
 
+.pf__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--bg-deep), var(--line));
+  color: var(--faint);
+}
 .pf__cover { position: relative; display: block; aspect-ratio: 4 / 3; overflow: hidden; background: var(--bg-deep); }
-.pf--tall .pf__cover { aspect-ratio: 3 / 3.7; }
+.pf--tall .pf__fallback {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, var(--bg-deep), var(--line));
+  color: var(--faint);
+}
+.pf__cover { aspect-ratio: 3 / 3.7; }
 .pf__cover img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.55s var(--ease-out); }
 .pf:hover .pf__cover img { transform: scale(1.05); }
 

@@ -7,7 +7,7 @@ import { useNotifications } from '~/composables/useNotifications'
 useHead({ title: 'اعلان‌ها — آرتیوو' })
 definePageMeta({ middleware: 'auth' })
 
-const { items, unread, ready, refresh, markRead } = useNotifications()
+const { items, unread, ready, error, refresh, markRead } = useNotifications()
 
 const icons: Record<string, string> = {
   proposal: 'send',
@@ -36,7 +36,15 @@ onMounted(refresh)
       </div>
     </header>
 
-    <div v-if="!ready" class="nt__list">
+    <AEmptyState
+      v-if="error && !ready"
+      icon="zap"
+      title="اعلان‌ها بارگذاری نشدند"
+      description="ارتباط برقرار نشد؛ دوباره تلاش کن."
+    >
+      <AButton size="sm" @click="refresh()">تلاش دوباره</AButton>
+    </AEmptyState>
+    <div v-else-if="!ready" class="nt__list">
       <div v-for="i in 4" :key="i" class="panel" style="padding:0.9rem">
         <ASkeleton h="2.8rem" radius="12px" />
       </div>

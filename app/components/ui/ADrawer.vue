@@ -65,7 +65,7 @@ onUnmounted(() => {
 .a-drawer__head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
 .a-drawer__title { font-size: var(--fs-lg); font-weight: 900; }
 .a-drawer__close {
-  width: 2.1rem; height: 2.1rem; display: grid; place-items: center;
+  width: 2.5rem; height: 2.5rem; display: grid; place-items: center; flex-shrink: 0;
   border-radius: 99px; background: var(--bg-deep); color: var(--ink-soft);
   transition: background 0.2s;
 }

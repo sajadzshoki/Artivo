@@ -21,6 +21,7 @@ const { displayRating, photosOf } = useSpots()
 
 const fa = new Intl.NumberFormat('fa-IR')
 const cover = computed(() => photosOf(props.spot)[0]?.url ?? props.spot.image)
+const imgFailed = ref(false)
 const ratingInfo = computed(() => displayRating(props.spot))
 const distance = computed(() =>
   props.userPos ? haversineKm(props.userPos, props.spot.location) : null)
@@ -35,8 +36,8 @@ function onSave() {
   <article class="sc">
     <NuxtLink :to="`/spots/${spot.id}`" class="sc__link" :aria-label="spot.name" />
 
-    <div class="sc__img" :style="!cover ? { background: `linear-gradient(150deg, ${spot.accent}26, ${spot.accent}5E)` } : undefined">
-      <img v-if="cover" :src="cover" :alt="spot.name" loading="lazy" width="720" height="560">
+    <div class="sc__img" :style="{ background: `linear-gradient(150deg, ${spot.accent}26, ${spot.accent}5E)` }">
+      <img v-if="cover && !imgFailed" :src="cover" :alt="spot.name" loading="lazy" decoding="async" width="720" height="560" @error="imgFailed = true">
       <button
         class="sc__save"
         :class="{ 'sc__save--on': isSaved(spot.id) }"

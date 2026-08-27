@@ -80,8 +80,8 @@ onUnmounted(() => {
 .a-modal__head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 0.85rem; }
 .a-modal__title { font-size: var(--fs-lg); font-weight: 900; }
 .a-modal__close {
-  width: 2.1rem;
-  height: 2.1rem;
+  width: 2.5rem;
+  height: 2.5rem;
   display: grid;
   place-items: center;
   border-radius: 99px;

@@ -9,6 +9,7 @@ export function useNotifications() {
   const items = useState<NotificationItem[]>('notif-items', () => [])
   const unread = useState<number>('notif-unread', () => 0)
   const ready = useState<boolean>('notif-ready', () => false)
+  const error = useState<boolean>('notif-error', () => false)
 
   let timer: ReturnType<typeof setInterval> | null = null
 
@@ -18,9 +19,10 @@ export function useNotifications() {
       items.value = res.items
       unread.value = res.unread
       ready.value = true
+      error.value = false
     }
     catch {
-      /* مهمان */
+      if (!ready.value) error.value = true
     }
   }
 
@@ -44,5 +46,5 @@ export function useNotifications() {
     await refresh()
   }
 
-  return { items, unread, ready, refresh, startPolling, stopPolling, markRead }
+  return { items, unread, ready, error, refresh, startPolling, stopPolling, markRead }
 }

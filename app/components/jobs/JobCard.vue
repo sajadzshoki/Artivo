@@ -134,6 +134,9 @@ const initials = computed(() => props.job.client.name.split(' ').map(w => w[0]).
   transition: color 0.2s, background 0.2s, transform 0.15s;
 }
 .jb__save:hover { color: var(--ink); background: var(--bg-deep); }
+@media (pointer: coarse) {
+  .jb__save { width: 2.5rem; height: 2.5rem; }
+}
 .jb__save:active { transform: scale(0.88); }
 .jb__save--on { color: var(--coral); }
 

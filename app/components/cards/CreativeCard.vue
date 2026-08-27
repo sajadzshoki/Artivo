@@ -14,12 +14,13 @@ function onSaveCreative() {
 }
 
 const fa = new Intl.NumberFormat('fa-IR')
+const imgFailed = ref(false)
 </script>
 
 <template>
   <NuxtLink :to="`/creatives/${creative.id}`" class="cc">
-    <span class="cc__cover" :style="!creative.image ? { background: `linear-gradient(150deg, ${creative.accent}30, ${creative.accent}66)` } : undefined">
-      <img v-if="creative.image" :src="creative.image" :alt="`نمونه‌کار ${creative.name}`" loading="lazy" width="560" height="420">
+    <span class="cc__cover" :style="{ background: `linear-gradient(150deg, ${creative.accent}30, ${creative.accent}66)` }">
+      <img v-if="creative.image && !imgFailed" :src="creative.image" :alt="`نمونه‌کار ${creative.name}`" loading="lazy" decoding="async" width="560" height="420" @error="imgFailed = true">
       <span class="cc__kind" :class="`cc__kind--${creative.kind}`">{{ creativeKindLabels[creative.kind] }}</span>
       <span class="cc__rate"><AIcon name="star" :size="13" /> {{ fa.format(creative.rating) }}</span>
       <button
@@ -158,4 +159,7 @@ const fa = new Intl.NumberFormat('fa-IR')
 .cc__price { font-size: var(--fs-caption); color: var(--muted); }
 .cc__price strong { color: var(--ink); font-weight: 800; }
 .cc__city { display: inline-flex; align-items: center; gap: 0.2rem; font-size: var(--fs-caption); color: var(--faint); }
+@media (pointer: coarse) {
+  .cc__save { width: 2.5rem; height: 2.5rem; }
+}
 </style>

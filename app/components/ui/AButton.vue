@@ -55,9 +55,12 @@ const classes = computed(() => [
 .a-btn:active { transform: translateY(1px) scale(0.99); }
 
 .a-btn--sm { height: 2.25rem; padding-inline: 0.95rem; font-size: var(--fs-small); }
+@media (pointer: coarse) {
+  .a-btn--sm { height: 2.5rem; }
+}
 .a-btn--md { height: 2.75rem; padding-inline: 1.35rem; font-size: var(--fs-body); }
 .a-btn--lg { height: 3.25rem; padding-inline: 1.75rem; font-size: 1rem; }
-.a-btn--block { display: flex; width: 100%; }
+.a-btn--block { display: flex; width: 100%; white-space: normal; text-align: center; line-height: 1.5; }
 
 .a-btn--primary { background: var(--coral); color: #fff; box-shadow: var(--shadow-coral); }
 .a-btn--primary:hover { background: var(--coral-deep); transform: translateY(-1px); }

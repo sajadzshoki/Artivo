@@ -55,7 +55,7 @@ const lightboxIndex = ref<number | null>(null)
           @click="lightboxIndex = 0"
           aria-label="بزرگ‌نمایی تصویر"
         >
-          <img v-if="examples[0]" :src="examples[0].cover" :alt="service.title" width="880" height="660">
+          <img v-if="examples[0]" :src="examples[0].cover" :alt="service.title" width="880" height="660" loading="lazy" decoding="async">
           <span class="sdet__zoom"><AIcon name="eye" :size="16" /> تماشا</span>
         </button>
 
@@ -82,7 +82,7 @@ const lightboxIndex = ref<number | null>(null)
         <h1 class="t-h1 sdet__title">{{ service.title }}</h1>
 
         <NuxtLink :to="`/creatives/${creative.id}`" class="sdet__by">
-          <img :src="creative.avatar" :alt="creative.name" width="40" height="40">
+          <img :src="creative.avatar" :alt="creative.name" width="40" height="40" loading="lazy" decoding="async">
           <span class="sdet__byid">
             <strong>{{ creative.name }}</strong>
             <span>{{ creative.role }} · پاسخ در {{ creative.responseTime }}</span>

@@ -96,7 +96,7 @@ const moreLike = computed(() => {
         @click="lightboxIndex = 0"
         aria-label="بزرگ‌نمایی گالری"
       >
-        <img :src="photos[0]?.url ?? spot.image" :alt="spot.name" width="1200" height="800">
+        <img :src="photos[0]?.url ?? spot.image" :alt="spot.name" width="1200" height="800" decoding="async">
         <span class="gal__zoom"><AIcon name="eye" :size="15" /> تماشای گالری</span>
       </button>
       <div v-else class="gal__empty" :style="{ background: `linear-gradient(150deg, ${spot.accent}26, ${spot.accent}5E)` }">

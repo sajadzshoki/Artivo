@@ -9,6 +9,7 @@ export function useProjects() {
   const asCreative = useState<ProjectSummary[]>('prj-as-creative', () => [])
   const ready = useState<boolean>('prj-ready', () => false)
   const loading = useState<boolean>('prj-loading', () => false)
+  const error = useState<boolean>('prj-error', () => false)
 
   async function refresh() {
     if (!import.meta.client) return
@@ -18,6 +19,10 @@ export function useProjects() {
       asClient.value = res.asClient
       asCreative.value = res.asCreative
       ready.value = true
+      error.value = false
+    }
+    catch {
+      if (!ready.value) error.value = true
     }
     finally {
       loading.value = false
@@ -39,5 +44,5 @@ export function useProjects() {
     return res.items
   }
 
-  return { asClient, asCreative, ready, loading, refresh, get, open }
+  return { asClient, asCreative, ready, loading, error, refresh, get, open }
 }

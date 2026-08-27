@@ -10,7 +10,7 @@ useHead({ title: 'داشبورد — آرتیوو' })
 definePageMeta({ middleware: 'auth' })
 
 const { user } = useAuth()
-const { asClient, asCreative, ready, refresh } = useProjects()
+const { asClient, asCreative, ready, error, refresh } = useProjects()
 const conversations = useConversations()
 const fa = new Intl.NumberFormat('fa-IR')
 
@@ -71,7 +71,15 @@ const roleOptions = computed(() => availableRoles.value.map(r => ({
       </div>
     </header>
 
-    <div v-if="!ready" class="dash__list">
+    <AEmptyState
+          v-if="error && !ready"
+          icon="zap"
+          title="داشبورد بارگذاری نشد"
+          description="ارتباط برقرار نشد؛ اتصالت را چک کن و دوباره تلاش کن."
+        >
+          <AButton size="sm" @click="refresh()">تلاش دوباره</AButton>
+        </AEmptyState>
+        <div v-else-if="!ready" class="dash__list">
       <div v-for="i in 3" :key="i" class="panel" style="padding:1rem">
         <ASkeleton h="3rem" radius="12px" />
       </div>

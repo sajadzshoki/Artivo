@@ -8,7 +8,7 @@ definePageMeta({ middleware: 'auth' })
 const route = useRoute()
 const router = useRouter()
 const { user } = useAuth()
-const { asClient, asCreative, ready, refresh } = useProjects()
+const { asClient, asCreative, ready, error, refresh } = useProjects()
 const fa = new Intl.NumberFormat('fa-IR')
 
 const availableRoles = computed(() => {
@@ -60,7 +60,15 @@ onMounted(refresh)
       <AFilterChips v-model="statusFilter" :options="statusOptions" label="فیلتر وضعیت" class="pl__chips" />
     </header>
 
-    <div v-if="!ready" class="pl__list">
+    <AEmptyState
+          v-if="error && !ready"
+          icon="zap"
+          title="پروژه‌ها بارگذاری نشدند"
+          description="ارتباط برقرار نشد؛ دوباره تلاش کن."
+        >
+          <AButton size="sm" @click="refresh()">تلاش دوباره</AButton>
+        </AEmptyState>
+        <div v-else-if="!ready" class="pl__list">
       <div v-for="i in 4" :key="i" class="panel" style="padding:1rem">
         <ASkeleton h="3.2rem" radius="12px" />
       </div>
