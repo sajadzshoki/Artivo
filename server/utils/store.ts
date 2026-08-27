@@ -1,4 +1,4 @@
-import type { Creative, CreativeService, PricingConfig, PublicOverlay } from '#shared/types'
+import type { ChatMessage, ConversationSummary, Creative, CreativeService, NotificationItem, Project, ProjectSummary, PublicOverlay } from '#shared/types'
 import type { AdminPricingRules, CatalogProjectType } from '#shared/config/catalog'
 import { defaultPricingBundle, defaultAdminPricingRules, rulesToPricingConfig } from '#shared/config/catalog'
 import { fontPairings } from '#shared/config/font-pairings'
@@ -60,6 +60,19 @@ export interface StoreData {
   }
   deleted: { jobs: string[]; spots: string[]; services: string[] }
   communityCreatives: Creative[]
+  projects: Project[]
+  threads: StoredThread[]
+  notifications: NotificationItem[]
+}
+
+/** گفتگوی داخلی — پیوند به پروژه (اختیاری) + وضعیت تایپ هم‌صحبت‌ها */
+export interface StoredThread {
+  id: string
+  projectId: string | null
+  members: string[]
+  messages: ChatMessage[]
+  typing: Record<string, number>
+  createdAt: string
 }
 
 function now() {
@@ -141,12 +154,18 @@ function createStore() {
     overrides: { jobs: {}, spots: {}, services: {}, creatives: {} },
     deleted: { jobs: [], spots: [], services: [] },
     communityCreatives: [],
+    projects: [],
+    threads: [],
+    notifications: [],
   }
   const data: StoreData = { ...fallback, ...loadJson<Partial<StoreData>>({}) }
   // فیلدهای اضافه‌شده در نسخه‌های بعدی + سیدِ کالکشن‌های تازه
   data.overrides ??= fallback.overrides
   data.deleted ??= fallback.deleted
   data.communityCreatives ??= []
+  data.projects ??= []
+  data.threads ??= []
+  data.notifications ??= []
   data.collections = { ...seedCollections(), ...data.collections }
 
   const purge = () => {
@@ -260,4 +279,52 @@ function buildSpotOverrides(): PublicOverlay['spotOverrides'] {
     if (name !== undefined || city !== undefined || bestTime !== undefined) out[k] = { name, city, bestTime }
   }
   return out
+}
+
+
+// ── Projects & Chat helpers ──
+
+export function findProject(id: string): Project | undefined {
+  return store.data.projects.find(p => p.id === id)
+}
+
+export function isParticipant(project: Project, userId: string): boolean {
+  return project.clientId === userId || project.creativeId === userId
+}
+
+export function findThreadForProject(projectId: string, a: string, b: string): StoredThread | undefined {
+  return store.data.threads.find(t =>
+    t.projectId === projectId && t.members.includes(a) && t.members.includes(b))
+}
+
+export function pushNotification(userId: string, kind: NotificationItem['kind'], title: string, body: string, link: string): void {
+  store.data.notifications.unshift({
+    id: `n-${Math.random().toString(36).slice(2, 10)}`,
+    userId,
+    kind,
+    title,
+    body,
+    link,
+    readAt: null,
+    createdAt: store.now(),
+  })
+}
+
+/** خلاصه‌ی پروژه از دید یک کاربر */
+export function toProjectSummary(p: Project, userId: string): ProjectSummary {
+  return {
+    id: p.id,
+    title: p.title,
+    typeLabel: p.typeLabel,
+    status: p.status,
+    clientName: p.clientName,
+    creativeName: p.creativeName,
+    budgetMax: p.budgetMax,
+    deadlineDays: p.deadlineDays,
+    proposalsCount: p.proposals.length,
+    revisionCount: p.revisionCount,
+    code: p.code,
+    updatedAt: p.updatedAt,
+    myRole: p.clientId === userId ? 'client' : 'creative',
+  }
 }

@@ -22,6 +22,11 @@ const manageLinks = computed(() => {
     { to: '/profile/client', icon: 'briefcase', label: 'پروفایل کارفرما', desc: 'نام برند، شهر و حوزه‌های موردعلاقه', show: !!user.value?.roles.includes('client') },
     { to: '/profile/creative', icon: 'aperture', label: 'پروفایل خلاق', desc: 'پیوند یا ساخت پروفایل عمومی خلاق', show: !!user.value?.roles.includes('creative') || !!user.value?.roles.includes('admin') },
     { to: '/profile/settings', icon: 'sliders', label: 'تنظیمات حساب', desc: 'اطلاعات، رمز عبور و نقش‌ها', show: true },
+    { to: '/dashboard', icon: 'grid', label: 'داشبورد', desc: 'نمای کلی پروژه‌ها و پیشنهادها', show: !!user.value },
+    { to: '/projects', icon: 'briefcase', label: 'پروژه‌های من', desc: 'کارفرمایی و خلاقیت', show: !!user.value },
+    { to: '/messages', icon: 'send', label: 'گفتگوها', desc: 'پیام‌های پروژه‌ها', show: !!user.value },
+    { to: '/notifications', icon: 'bell', label: 'اعلان‌ها', desc: 'رویدادهای حساب', show: !!user.value },
+    { to: '/saved', icon: 'heart', label: 'ذخیره‌شده‌ها', desc: 'پروژه‌ها، خلاق‌ها و لوکیشن‌ها', show: true },
   ]
   if (isAdmin.value) {
     links.unshift({ to: '/admin', icon: 'shield', label: 'پنل مدیریت', desc: 'قیمت‌گذاری، محتوا و کاربران', show: true })

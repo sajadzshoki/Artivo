@@ -277,6 +277,136 @@ export interface Review {
   text: string
 }
 
+// ─── Project workspace · چرخه‌ی حیات پروژه (Phase 6) ──────────
+
+export interface FileAttachment {
+  id: string
+  name: string
+  /** DataURL در فاز توسعه — فاز بک‌اند: URL واقعی storage */
+  url: string
+  size: number
+}
+
+export interface ProjectProposal {
+  id: string
+  creativeId: string
+  creativeName: string
+  price: number
+  deliveryDays: number
+  message: string
+  status: 'pending' | 'accepted' | 'rejected'
+  createdAt: string
+}
+
+export interface ProjectDeliverable {
+  id: string
+  authorId: string
+  authorName: string
+  note: string
+  files: FileAttachment[]
+  /** شماره‌ی نوبت اصلاحیه‌ای که این تحویل پاسخ آن است */
+  revisionNo: number
+  createdAt: string
+}
+
+export interface Project {
+  id: string
+  title: string
+  /** شناسه‌ی نوع پروژه‌ی کاتالوگ */
+  typeId: string
+  typeLabel: string
+  description: string
+  budgetMin: number | null
+  budgetMax: number | null
+  deadlineDays: number | null
+  status: import('#shared/config/project-status').ProjectStatus
+  clientId: string
+  clientName: string
+  creativeId: string | null
+  creativeName: string | null
+  proposals: ProjectProposal[]
+  deliverables: ProjectDeliverable[]
+  revisionCount: number
+  /** کد کوتاه برای نمایش */
+  code: string
+  createdAt: string
+  updatedAt: string
+}
+
+/** خلاصه برای فهرست‌ها */
+export interface ProjectSummary {
+  id: string
+  title: string
+  typeLabel: string
+  status: import('#shared/config/project-status').ProjectStatus
+  clientName: string
+  creativeName: string | null
+  budgetMax: number | null
+  deadlineDays: number | null
+  proposalsCount: number
+  revisionCount: number
+  code: string
+  updatedAt: string
+  /** نقش کاربر جاری در این پروژه */
+  myRole: 'client' | 'creative'
+}
+
+// ─── Chat · گفتگوهای داخلی ──────────────────────────────────
+
+export interface ConversationSummary {
+  id: string
+  projectId: string | null
+  projectTitle: string | null
+  peers: { id: string; name: string }[]
+  lastMessage: { body: string; at: string; from: string } | null
+  unread: number
+  updatedAt: string
+}
+
+export interface ChatMessage {
+  id: string
+  from: string
+  fromName: string
+  body: string
+  files: FileAttachment[]
+  at: string
+  readAt: string | null
+}
+
+export interface ThreadPayload {
+  id: string
+  projectId: string | null
+  projectTitle: string | null
+  projectStatus: string | null
+  peers: { id: string; name: string }[]
+  messages: ChatMessage[]
+  /** کاربر مقابل در حال تایپ است (۴ ثانیه‌ی آخر) */
+  peerTyping: boolean
+}
+
+// ─── Notifications ──────────────────────────────────────────
+
+export type NotificationKind =
+  | 'proposal'
+  | 'proposal-accepted'
+  | 'proposal-rejected'
+  | 'project-started'
+  | 'work-submitted'
+  | 'revision-requested'
+  | 'project-completed'
+  | 'message'
+
+export interface NotificationItem {
+  id: string
+  userId: string
+  kind: NotificationKind
+  title: string
+  body: string
+  link: string
+  readAt: string | null
+  createdAt: string
+}
+
 // ─── Wizard state ─────────────────────────────────────────────
 
 export interface BriefFile {

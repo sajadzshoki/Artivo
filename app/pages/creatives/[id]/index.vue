@@ -22,6 +22,8 @@ useHead(() => ({
 
 const fa = new Intl.NumberFormat('fa-IR')
 const toast = useToast()
+const { user } = useAuth()
+const savedCreative = useSavedCreatives()
 
 const items = computed(() => (creative.value ? portfolioOf(creative.value.id) : []))
 const services = computed(() => (creative.value ? overlayServices.value.filter(s => s.creativeId === creative.value!.id) : []))
@@ -43,8 +45,13 @@ const similar = computed(() => {
     .slice(0, 4)
 })
 
-function contactDirect() {
-  toast.info('به‌زودی', 'درخواست همکاری مستقیم در فاز بعدی فعال می‌شود؛ فعلاً از «شروع پروژه» بریف بدهید.')
+async function contactDirect() {
+  // همکاری مستقیم = ساخت پروژه با این خلاق (پیشنهاد در توضیحات ثبت می‌شود)
+  if (!user.value) {
+    await navigateTo({ path: '/auth/login', query: { redirect: `/creatives/${creative.value?.id}` } })
+    return
+  }
+  await navigateTo(`/projects/new?creative=${creative.value?.id}`)
 }
 </script>
 
@@ -57,7 +64,8 @@ function contactDirect() {
 
         <div class="phero__grid">
           <div class="phero__avatar-wrap">
-            <img :src="creative.avatar" :alt="creative.name" class="phero__avatar" width="180" height="180">
+            <img v-if="creative.avatar" :src="creative.avatar" :alt="creative.name" class="phero__avatar" width="180" height="180">
+            <span v-else class="phero__avatar phero__avatar--letter">{{ creative.name.charAt(0) }}</span>
             <span class="phero__star"><AIcon name="star" :size="15" /> {{ fa.format(creative.rating) }}</span>
           </div>
 
@@ -76,7 +84,15 @@ function contactDirect() {
 
             <div class="phero__cta">
               <AButton :to="`/create?creative=${creative.id}`" size="lg" icon-end="arrow-left">شروع پروژه با {{ creative.name.split(' ')[0] }}</AButton>
-              <AButton size="lg" variant="outline" icon="send" @click="contactDirect">درخواست همکاری مستقیم</AButton>
+              <AButton size="lg" variant="outline" icon="plus" @click="contactDirect">پروژه‌ی اختصاصی با {{ creative.name.split(' ')[0] }}</AButton>
+              <AButton
+                size="lg"
+                variant="ghost"
+                icon="heart"
+                @click="savedCreative.toggle(creative.id); toast.success(savedCreative.isSaved(creative.id) ? 'ذخیره شد' : 'حذف شد')"
+              >
+                {{ savedCreative.isSaved(creative.id) ? 'ذخیره شد' : 'ذخیره' }}
+              </AButton>
             </div>
           </div>
         </div>

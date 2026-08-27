@@ -1,14 +1,30 @@
 <script setup lang="ts">
 // ─────────────────────────────────────────────────────────────
 // ABottomNav · ناوبری پایین موبایل + دکمه‌ی مرکزی «شروع پروژه»
+// badge پیام خوانده‌نشده روی «گفتگوها» (polling سبک)
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
-const items = [
+const { user } = useAuth()
+const { totalUnread, ready, refresh } = useConversations()
+
+const items = computed(() => [
   { to: '/', icon: 'home', label: 'خانه' },
   { to: '/jobs', icon: 'briefcase', label: 'پروژه‌ها' },
-  { to: '/creatives', icon: 'users', label: 'خلاق‌ها' },
+  { to: '/messages', icon: 'send', label: 'گفتگو', badge: user.value ? totalUnread.value : 0 },
+  { to: '/dashboard', icon: 'sliders', label: 'داشبورد' },
   { to: '/profile', icon: 'user', label: 'پروفایل' },
-]
+])
+
+let timer: ReturnType<typeof setInterval> | null = null
+onMounted(() => {
+  if (!user.value) return
+  void refresh()
+  timer = setInterval(() => {
+    if (!document.hidden) void refresh()
+  }, 20000)
+})
+onUnmounted(() => { if (timer) clearInterval(timer) })
+watch(() => user.value?.id, (id) => { if (id) void refresh() })
 </script>
 
 <template>
@@ -19,10 +35,13 @@ const items = [
         :key="it.to"
         :to="it.to"
         class="a-bnav__item"
-        :class="{ 'a-bnav__item--active': route.path === it.to }"
+        :class="{ 'a-bnav__item--active': route.path === it.to || (it.to !== '/' && route.path.startsWith(it.to)) }"
         :aria-current="route.path === it.to ? 'page' : undefined"
       >
-        <AIcon :name="it.icon" :size="21" />
+        <span class="a-bnav__iconwrap">
+          <AIcon :name="it.icon" :size="21" />
+          <span v-if="it.badge" class="a-bnav__badge">{{ it.badge > 9 ? '۹+' : new Intl.NumberFormat('fa-IR').format(it.badge) }}</span>
+        </span>
         <span class="a-bnav__label">{{ it.label }}</span>
         <span v-if="route.path === it.to" class="a-bnav__dot" aria-hidden="true" />
       </NuxtLink>
@@ -48,7 +67,7 @@ const items = [
 }
 .a-bnav__in {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   max-width: 34rem;
   margin-inline: auto;
   height: 4.1rem;
@@ -68,6 +87,23 @@ const items = [
 .a-bnav__item:active { transform: scale(0.94); }
 .a-bnav__item--active { color: var(--ink); }
 .a-bnav__label { font-size: 0.64rem; font-weight: 700; }
+.a-bnav__iconwrap { position: relative; display: grid; place-items: center; }
+.a-bnav__badge {
+  position: absolute;
+  top: -0.3rem;
+  inset-inline-end: -0.45rem;
+  min-width: 1.05rem;
+  height: 1.05rem;
+  display: grid;
+  place-items: center;
+  background: var(--coral);
+  color: #fff;
+  border-radius: 99px;
+  font-size: 0.55rem;
+  font-weight: 900;
+  padding-inline: 0.2rem;
+  border: 1.5px solid var(--bg);
+}
 .a-bnav__dot {
   position: absolute;
   top: 0.35rem;

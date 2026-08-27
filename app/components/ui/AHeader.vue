@@ -4,6 +4,7 @@
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
 const { user, logout, isAdmin } = useAuth()
+const { unread: notifUnread, refresh: refreshNotifs, startPolling: startNotifPolling, stopPolling: stopNotifPolling } = useNotifications()
 const scrolled = ref(false)
 
 function onScroll() { scrolled.value = window.scrollY > 8 }
@@ -25,6 +26,8 @@ function onDocClick(e: MouseEvent) {
   if (acctRoot.value && !acctRoot.value.contains(e.target as Node)) menuOpen.value = false
 }
 onMounted(() => document.addEventListener('click', onDocClick))
+watch(() => user.value?.id, (id) => { if (id) startNotifPolling(); else stopNotifPolling() }, { immediate: true })
+onUnmounted(() => stopNotifPolling())
 onUnmounted(() => document.removeEventListener('click', onDocClick))
 watch(() => route.path, () => { menuOpen.value = false })
 
@@ -55,7 +58,11 @@ const initial = computed(() => user.value?.name.trim().charAt(0) ?? '')
         <AButton to="/create" size="sm" class="a-header__cta">شروع پروژه</AButton>
 
         <!-- حساب -->
-        <div v-if="user" ref="acctRoot" class="acct">
+        <div v-if="user" ref="acctRoot" class="acct acct--group">
+          <NuxtLink to="/notifications" class="acct__bell" aria-label="اعلان‌ها">
+            <AIcon name="bell" :size="18" />
+            <span v-if="notifUnread" class="acct__bell-dot" />
+          </NuxtLink>
           <button type="button" class="acct__btn" :aria-expanded="menuOpen" aria-label="منوی حساب" @click="menuOpen = !menuOpen">
             <span class="acct__avatar">{{ initial }}</span>
           </button>
@@ -154,6 +161,25 @@ const initial = computed(() => user.value?.name.trim().charAt(0) ?? '')
 
 /* ── منوی حساب ── */
 .acct { position: relative; }
+.acct--group { display: flex; align-items: center; gap: 0.45rem; }
+.acct__bell {
+  position: relative;
+  width: 2.4rem; height: 2.4rem;
+  display: grid; place-items: center;
+  border-radius: 99px;
+  color: var(--ink-soft);
+  transition: background 0.2s;
+}
+.acct__bell:hover { background: var(--bg-deep); }
+.acct__bell-dot {
+  position: absolute;
+  top: 0.3rem;
+  inset-inline-end: 0.3rem;
+  width: 0.5rem; height: 0.5rem;
+  border-radius: 99px;
+  background: var(--coral);
+  border: 1.5px solid var(--bg);
+}
 .acct__btn {
   display: grid;
   place-items: center;

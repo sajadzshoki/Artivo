@@ -2,6 +2,7 @@
 // صفحه‌ی موفقیت — پس از ثبت درخواست
 const emit = defineEmits<{ new: [] }>()
 const lastCode = useState<string | null>('artivo-last-code', () => null)
+const { user } = useAuth()
 
 onMounted(() => window.scrollTo({ top: 0 }))
 
@@ -38,7 +39,7 @@ function copyCode() {
     </div>
 
     <div class="done__actions">
-      <AButton to="/" size="lg" variant="secondary">بازگشت به خانه</AButton>
+      <AButton :to="user ? '/dashboard' : '/'" size="lg" variant="secondary">{{ user ? 'داشبورد پروژه‌ها' : 'بازگشت به خانه' }}</AButton>
       <AButton to="/profile" size="lg" variant="outline">درخواست‌های من</AButton>
       <AButton size="lg" variant="ghost" @click="emit('new')">ثبت درخواست جدید</AButton>
     </div>

@@ -1,7 +1,10 @@
 <script setup lang="ts">
 // چیدمان پیش‌فرض — در مسیرهای immersive (ویزارد) هدر/ناوبری حذف می‌شود
 const route = useRoute()
-const immersive = computed(() => route.path.startsWith('/create'))
+const immersive = computed(() =>
+  route.path.startsWith('/create') ||
+  (route.path.startsWith('/messages/') && route.path !== '/messages')
+)
 </script>
 
 <template>
