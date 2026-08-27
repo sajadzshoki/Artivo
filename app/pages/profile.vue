@@ -1,10 +1,11 @@
 <script setup lang="ts">
-// پروفایل — فاز ۱: مهمان + درخواست‌های ثبت‌شده روی همین دستگاه
+// پروفایل — فاز ۱ تا ۳: مهمان + درخواست‌ها و پیشنهادهای ثبت‌شده روی همین دستگاه
 useHead({ title: 'پروفایل — آرتیوو' })
 
 const toast = useToast()
 const { requests, ready } = useMyRequests()
 const { reset } = useProjectRequest()
+const { proposals, ready: proposalsReady } = useJobProposals()
 
 const soon = () => toast.info('به‌زودی', 'این بخش در فازهای بعدی آرتیوو فعال می‌شود.')
 
@@ -73,6 +74,46 @@ const menu = [
       </div>
     </section>
 
+    <!-- پیشنهادهای من -->
+    <section class="reqs" v-reveal>
+      <div class="section-head" style="margin-bottom:1rem">
+        <div class="section-head__titles">
+          <span class="section-head__kicker">پیشنهادهای من</span>
+          <h2 class="t-h2">برای پروژه‌های باز فرستاده‌ام</h2>
+        </div>
+        <NuxtLink to="/jobs" class="section-head__link">
+          پروژه‌های باز
+          <AIcon name="arrow-left" :size="15" />
+        </NuxtLink>
+      </div>
+
+      <template v-if="proposalsReady && proposals.length">
+        <TransitionGroup name="list" tag="div" class="reqs__list">
+          <NuxtLink v-for="p in proposals" :key="p.id" :to="`/jobs/${p.jobId}`" class="panel prop">
+            <span class="prop__icon"><AIcon name="send" :size="16" /></span>
+            <div class="req__body">
+              <strong class="req__title">{{ p.jobTitle }}</strong>
+              <span class="t-caption">{{ new Intl.DateTimeFormat('fa-IR', { dateStyle: 'medium' }).format(new Date(p.createdAt)) }} · مهلت {{ new Intl.NumberFormat('fa-IR').format(p.deliveryDays) }} روزه</span>
+            </div>
+            <div class="req__side">
+              <strong class="req__price">{{ formatTomanCompact(p.price) }}</strong>
+              <ATag label="ارسال شد" tone="green" dot />
+            </div>
+          </NuxtLink>
+        </TransitionGroup>
+      </template>
+
+      <p v-else-if="proposalsReady" class="t-caption prop-empty">
+        هنوز پیشنهادی نفرستاده‌ای؛
+        <NuxtLink to="/jobs" class="draft-note__btn">پروژه‌های باز</NuxtLink>
+        منتظرند.
+      </p>
+
+      <div v-else class="panel" style="padding:1rem">
+        <ASkeleton w="100%" h="3.5rem" radius="16px" />
+      </div>
+    </section>
+
     <!-- منو -->
     <nav class="menu" aria-label="منوی پروفایل" v-reveal>
       <button
@@ -127,6 +168,18 @@ const menu = [
 
 .reqs { margin-top: var(--sp-6); }
 .reqs__list { display: grid; gap: 0.6rem; }
+
+.prop { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem 1.05rem; transition: border-color 0.2s, background 0.2s; }
+.prop:hover { border-color: var(--line-strong); background: var(--bg-deep); }
+.prop__icon {
+  width: 2.2rem; height: 2.2rem;
+  display: grid; place-items: center;
+  border-radius: 99px;
+  background: var(--indigo-soft);
+  color: var(--indigo-deep);
+  flex-shrink: 0;
+}
+.prop-empty { text-align: center; padding: 0.6rem 0; }
 
 .req { display: flex; align-items: center; gap: 0.9rem; padding: 0.95rem 1.05rem; }
 .req__code {

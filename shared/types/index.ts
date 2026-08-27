@@ -286,6 +286,94 @@ export interface SubmittedRequest {
   status: string
 }
 
+// ─── Jobs Marketplace ────────────────────────────────────────
+
+/** اسلاید حداقلی برای لایت‌باکس — PortfolioItem و تصاویر مرجع هر دو سازگارند */
+export interface LightboxSlide {
+  id: string
+  title: string
+  description?: string
+  year?: string
+  client?: string
+  tags?: string[]
+  cover: string
+  images?: string[]
+}
+
+/** دسته‌بندی پروژه‌های باز */
+export type JobCategoryId =
+  | 'graphic-design'
+  | 'logo'
+  | 'poster'
+  | 'social'
+  | 'branding'
+  | 'packaging'
+  | 'ui'
+  | 'illustration'
+  | 'photo-editing'
+  | 'product-photo'
+  | 'portrait-photo'
+  | 'event-photo'
+  | 'commercial-photo'
+  | 'other'
+
+/** محل اجرای پروژه */
+export type Workplace = 'remote' | 'onsite' | 'hybrid'
+
+export interface JobClient {
+  name: string
+  /** برند / آژانس / استارتاپ / سازمان / کافه */
+  type: string
+  about: string
+  rating: number
+  jobsPosted: number
+  memberSince: string
+  verified?: boolean
+}
+
+export interface JobBrief {
+  paragraphs: string[]
+  requirements: string[]
+  deliverables: string[]
+  referenceImages: string[]
+  referenceLinks: { label: string; url: string }[]
+}
+
+export interface Job {
+  id: string
+  title: string
+  categoryId: JobCategoryId
+  /** این پروژه برای کدام نوع خلاق است */
+  kinds: CreativeKind[]
+  /** توضیح کوتاه — برای کارت */
+  description: string
+  budgetMin: number
+  budgetMax: number
+  deadlineDays: number
+  urgent: boolean
+  workplace: Workplace
+  location: string
+  /** چند روز پیش منتشر شده */
+  postedDaysAgo: number
+  proposalsCount: number
+  status: 'open' | 'closed'
+  client: JobClient
+  brief: JobBrief
+}
+
+/** پیشنهادی که خلاق برای یک پروژه‌ی باز ثبت می‌کند */
+export interface JobProposal {
+  id: string
+  jobId: string
+  jobTitle: string
+  price: number
+  deliveryDays: number
+  proposal: string
+  portfolioItemIds: string[]
+  serviceIds: string[]
+  createdAt: string
+}
+
 // ─── Mock content ─────────────────────────────────────────────
 
 export interface Creative {
@@ -301,19 +389,6 @@ export interface Creative {
   image?: string
   accent: string
   featured?: boolean
-}
-
-export interface Job {
-  id: string
-  title: string
-  client: string
-  typeId: ProjectTypeId
-  budgetMin: number
-  budgetMax: number
-  deadlineDays: number
-  proposals: number
-  postedAt: string
-  location: string
 }
 
 export interface PhotoSpot {

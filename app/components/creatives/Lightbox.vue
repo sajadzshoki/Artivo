@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import type { PortfolioItem } from '#shared/types'
+import type { LightboxSlide } from '#shared/types'
 
 // ─────────────────────────────────────────────────────────────
 // Lightbox · نمایش تمام‌صفحه‌ی گالری نمونه‌کار (RTL-aware)
 // ─────────────────────────────────────────────────────────────
 const props = defineProps<{
-  items: PortfolioItem[]
+  items: LightboxSlide[]
 }>()
 
 const index = defineModel<number | null>({ required: true })
