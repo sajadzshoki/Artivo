@@ -2,6 +2,7 @@ import type { CreativeKind, Job, JobCategoryId } from '#shared/types'
 import { jobs } from '#shared/data/jobs'
 import { budgetPresets, deliveryPresets, jobCategoryLabels } from '#shared/config/job-categories'
 import { useSavedJobs } from './useSavedJobs'
+import { useOverlay } from './useOverlay'
 
 // ─────────────────────────────────────────────────────────────
 // useJobsQuery · موتور کشف پروژه‌ها
@@ -39,8 +40,19 @@ export function defaultJobsFilters(): JobsQueryFilters {
   }
 }
 
-export function filterJobs(f: JobsQueryFilters, savedIds: string[]): Job[] {
-  let list = [...jobs]
+export interface JobsOverlay {
+  closedIds: string[]
+  deletedIds: string[]
+  jobOverrides: Record<string, { title?: string; urgent?: boolean }>
+}
+
+export function filterJobs(f: JobsQueryFilters, savedIds: string[], overlay?: JobsOverlay): Job[] {
+  // وضعیت ادمین (بسته/متوقف/حذف‌شده) + وصله‌های عنوان/فوریت
+  let list = jobs.filter((j) => {
+    if (overlay && (overlay.deletedIds.includes(j.id) || overlay.closedIds.includes(j.id))) return false
+    return true
+  })
+  if (overlay) list = list.map(j => ({ ...j, ...(overlay.jobOverrides[j.id] ?? {}) }))
 
   const q = f.search.trim()
   if (q) {
@@ -87,8 +99,9 @@ export function fetchJobsPage(
   page: number,
   savedIds: string[],
   pageSize = jobsPageSize,
+  overlay?: JobsOverlay,
 ): Promise<{ items: Job[]; total: number; hasMore: boolean }> {
-  const all = filterJobs(f, savedIds)
+  const all = filterJobs(f, savedIds, overlay)
   const start = page * pageSize
   const items = all.slice(start, start + pageSize)
   return new Promise(resolve => setTimeout(() => resolve({
@@ -100,6 +113,12 @@ export function fetchJobsPage(
 
 export function useJobsQuery() {
   const saved = useSavedJobs()
+  const { overlay } = useOverlay()
+  const jobsOverlay = computed<JobsOverlay>(() => ({
+    closedIds: overlay.value.closedJobIds,
+    deletedIds: overlay.value.deletedJobIds,
+    jobOverrides: overlay.value.jobOverrides,
+  }))
 
   const filters = reactive<JobsQueryFilters>(defaultJobsFilters())
   const items = ref<Job[]>([])
@@ -114,7 +133,7 @@ export function useJobsQuery() {
 
   async function apply() {
     loading.value = true
-    const res = await fetchJobsPage(filters, 0, saved.ids.value)
+    const res = await fetchJobsPage(filters, 0, saved.ids.value, jobsPageSize, jobsOverlay.value)
     items.value = res.items
     total.value = res.total
     page.value = 0
@@ -125,7 +144,7 @@ export function useJobsQuery() {
   async function loadMore() {
     if (loadingMore.value || !hasMore.value) return
     loadingMore.value = true
-    const res = await fetchJobsPage(filters, page.value + 1, saved.ids.value)
+    const res = await fetchJobsPage(filters, page.value + 1, saved.ids.value, jobsPageSize, jobsOverlay.value)
     items.value = [...items.value, ...res.items]
     total.value = res.total
     page.value += 1

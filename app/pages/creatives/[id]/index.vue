@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import type { Creative } from '#shared/types'
 import { creativeKindLabels } from '#shared/types'
-import { creatives } from '#shared/data/content'
 import { portfolioOf } from '#shared/data/portfolio'
-import { servicesOf } from '#shared/data/services'
 import { reviewsOf } from '#shared/data/reviews'
+// خلاق از لایه‌ی هم‌پوشانی (پروفایل‌های جامعه + وصله‌های ادمین)
+const { allCreatives: creativesPool, services: overlayServices } = useOverlay()
 
 // ─────────────────────────────────────────────────────────────
 // پروفایل خلاق — تجربه‌ای شبیه پرونده‌ی مجله‌ای، نه رزومه
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
-const creative = computed(() => creatives.find(c => c.id === route.params.id))
+const creative = computed(() => creativesPool.value.find(c => c.id === route.params.id))
 
 if (!creative.value) {
   throw createError({ statusCode: 404, message: 'خلاق پیدا نشد', fatal: false })
@@ -24,7 +24,7 @@ const fa = new Intl.NumberFormat('fa-IR')
 const toast = useToast()
 
 const items = computed(() => (creative.value ? portfolioOf(creative.value.id) : []))
-const services = computed(() => (creative.value ? servicesOf(creative.value.id) : []))
+const services = computed(() => (creative.value ? overlayServices.value.filter(s => s.creativeId === creative.value!.id) : []))
 const reviewCount = computed(() => (creative.value ? reviewsOf(creative.value.id).length : 0))
 
 const stats = computed(() => creative.value
@@ -38,7 +38,7 @@ const stats = computed(() => creative.value
 
 const similar = computed(() => {
   if (!creative.value) return []
-  return creatives
+  return creativesPool.value
     .filter(c => c.id !== creative.value?.id && c.kind === creative.value?.kind)
     .slice(0, 4)
 })

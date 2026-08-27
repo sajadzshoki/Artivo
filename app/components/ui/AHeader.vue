@@ -1,8 +1,9 @@
 <script setup lang="ts">
 // ─────────────────────────────────────────────────────────────
-// AHeader · هدر چسبان — واژه‌نگار + ناوبری دسکتاپ + CTA
+// AHeader · هدر چسبان — واژه‌نگار + ناوبری دسکتاپ + CTA + حساب
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
+const { user, logout, isAdmin } = useAuth()
 const scrolled = ref(false)
 
 function onScroll() { scrolled.value = window.scrollY > 8 }
@@ -16,6 +17,18 @@ const links = [
   { to: '/services', label: 'سرویس‌ها' },
   { to: '/spots', label: 'لوکیشن عکاسی' },
 ]
+
+// منوی حساب
+const menuOpen = ref(false)
+const acctRoot = ref<HTMLElement | null>(null)
+function onDocClick(e: MouseEvent) {
+  if (acctRoot.value && !acctRoot.value.contains(e.target as Node)) menuOpen.value = false
+}
+onMounted(() => document.addEventListener('click', onDocClick))
+onUnmounted(() => document.removeEventListener('click', onDocClick))
+watch(() => route.path, () => { menuOpen.value = false })
+
+const initial = computed(() => user.value?.name.trim().charAt(0) ?? '')
 </script>
 
 <template>
@@ -38,7 +51,37 @@ const links = [
         </NuxtLink>
       </nav>
 
-      <AButton to="/create" size="sm" class="a-header__cta">شروع پروژه</AButton>
+      <div class="a-header__side">
+        <AButton to="/create" size="sm" class="a-header__cta">شروع پروژه</AButton>
+
+        <!-- حساب -->
+        <div v-if="user" ref="acctRoot" class="acct">
+          <button type="button" class="acct__btn" :aria-expanded="menuOpen" aria-label="منوی حساب" @click="menuOpen = !menuOpen">
+            <span class="acct__avatar">{{ initial }}</span>
+          </button>
+          <Transition name="acct">
+            <div v-if="menuOpen" class="acct__menu" role="menu">
+              <div class="acct__head">
+                <strong>{{ user.name }}</strong>
+                <span class="latin" dir="ltr">{{ user.mobile || user.email }}</span>
+              </div>
+              <NuxtLink to="/profile" class="acct__item" role="menuitem">
+                <AIcon name="user" :size="15" /> پروفایل
+              </NuxtLink>
+              <NuxtLink to="/profile/settings" class="acct__item" role="menuitem">
+                <AIcon name="sliders" :size="15" /> تنظیمات
+              </NuxtLink>
+              <NuxtLink v-if="isAdmin" to="/admin" class="acct__item acct__item--admin" role="menuitem">
+                <AIcon name="shield" :size="15" /> پنل مدیریت
+              </NuxtLink>
+              <button type="button" class="acct__item acct__item--out" role="menuitem" @click="logout()">
+                <AIcon name="logout" :size="15" /> خروج
+              </button>
+            </div>
+          </Transition>
+        </div>
+        <AButton v-else to="/auth/login" size="sm" variant="outline" class="a-header__login">ورود</AButton>
+      </div>
     </div>
   </header>
 </template>
@@ -78,6 +121,7 @@ const links = [
   padding-inline-start: 0.6rem;
 }
 
+.a-header__side { margin-inline-start: auto; display: flex; align-items: center; gap: 0.6rem; }
 .a-header__nav { display: none; gap: var(--sp-5); margin-inline-start: auto; }
 .a-header__link {
   position: relative;
@@ -107,4 +151,68 @@ const links = [
 @media (max-width: 480px) {
   .a-header__tag { display: none; }
 }
+
+/* ── منوی حساب ── */
+.acct { position: relative; }
+.acct__btn {
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  padding: 0;
+  transition: transform 0.2s;
+}
+.acct__btn:active { transform: scale(0.92); }
+.acct__avatar {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+  border-radius: 99px;
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 900;
+  font-size: 1rem;
+  border: 2px solid var(--paper);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+.acct__menu {
+  position: absolute;
+  top: calc(100% + 0.55rem);
+  inset-inline-end: 0;
+  z-index: 70;
+  width: 15rem;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-pop);
+  overflow: hidden;
+}
+.acct__head {
+  display: grid;
+  gap: 0.1rem;
+  padding: 0.8rem 0.95rem;
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-deep);
+}
+.acct__head strong { font-size: var(--fs-small); font-weight: 900; }
+.acct__head span { font-size: 0.64rem; color: var(--muted); }
+.acct__item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.6rem 0.95rem;
+  font-size: var(--fs-small);
+  font-weight: 700;
+  color: var(--ink-soft);
+  transition: background 0.15s;
+}
+.acct__item:hover { background: var(--bg-deep); color: var(--ink); }
+.acct__item--admin { color: var(--indigo-deep); }
+.acct__item--out { color: var(--coral-deep); border-top: 1px solid var(--line); }
+.acct__item--out:hover { background: var(--coral-soft); }
+
+.acct-enter-active { transition: opacity 0.2s, transform 0.2s var(--ease-out); }
+.acct-leave-active { transition: opacity 0.15s; }
+.acct-enter-from, .acct-leave-to { opacity: 0; transform: translateY(-6px); }
 </style>

@@ -1,8 +1,7 @@
 import type { ColorPalette } from '#shared/types'
-import { colorPalettes } from '#shared/config/palettes'
-import { fontPairings } from '#shared/config/font-pairings'
 import { projectTypeMap, sizeConfigs } from '#shared/config/project-types'
-import { pricingConfig } from '#shared/services/pricing'
+// کاتالوگ و کانفیگ زنده از موتور مرکزی
+import { usePricing } from './usePricing'
 import { creativesById as creativesByIdMap } from '#shared/data/portfolio'
 
 // ─────────────────────────────────────────────────────────────
@@ -21,7 +20,7 @@ export interface SummarySection {
 
 export function useRequestSummary() {
   const { state } = useProjectRequest()
-  const { estimate } = usePricing()
+  const { estimate, config: pricingConfig, catalog } = usePricing()
   const creativeIndex = creativesByIdMap()
 
   const sections = computed<SummarySection[]>(() => {
@@ -64,7 +63,7 @@ export function useRequestSummary() {
       paletteName = 'رنگ‌های دلخواه'
     }
     else if (s.visual.paletteId) {
-      const p = colorPalettes.find((x: ColorPalette) => x.id === s.visual.paletteId)
+      const p = catalog.value.palettes.find((x: ColorPalette) => x.id === s.visual.paletteId)
       if (p) { swatches = p.colors; paletteName = p.name }
     }
     out.push({
@@ -77,7 +76,7 @@ export function useRequestSummary() {
     })
 
     // ۴ — تایپوگرافی
-    const fp = fontPairings.find(f => f.id === s.fontPairingId)
+    const fp = catalog.value.fontPairings.find(f => f.id === s.fontPairingId)
     out.push({ step: 3, title: 'تایپوگرافی', icon: 'type', lines: fp ? [fp.name, `حس ${fp.tone}`] : ['انتخاب نشده'] })
 
     // ۵ — محتوا و بریف
@@ -93,8 +92,8 @@ export function useRequestSummary() {
 
     // ۶ — بودجه و تحویل
     const budgetLines: string[] = []
-    const u = pricingConfig.urgencyOptions.find(o => o.id === s.budget.urgencyId)
-    const c = pricingConfig.complexityOptions.find(o => o.id === s.budget.complexityId)
+    const u = pricingConfig.value.urgencyOptions.find(o => o.id === s.budget.urgencyId)
+    const c = pricingConfig.value.complexityOptions.find(o => o.id === s.budget.complexityId)
     if (u) budgetLines.push(`تحویل ${u.label} (${u.hint})`)
     if (c) budgetLines.push(`پیچیدگی ${c.label}`)
     if (s.budget.addOnIds.length) budgetLines.push(`${new Intl.NumberFormat('fa-IR').format(s.budget.addOnIds.length)} سرویس اختیاری`)

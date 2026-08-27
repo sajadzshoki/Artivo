@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // گام ۱ — انتخاب نوع پروژه
-import { projectTypes } from '#shared/config/project-types'
+// انواع پروژه از کاتالوگ زنده (برچسب‌ها قابل مدیریت از پنل ادمین)
+const { catalog } = usePricing()
+const projectTypes = computed(() => catalog.value.projectTypes)
 
 const { state, setType } = useProjectRequest()
 </script>
@@ -20,7 +22,7 @@ const { state, setType } = useProjectRequest()
         class="tt"
         :class="{ 'tt--on': state.type === t.id }"
         :aria-pressed="state.type === t.id"
-        @click="setType(t.id)"
+        @click="setType(t.id as ProjectTypeId)"
       >
         <span class="tt__icon"><AIcon :name="t.icon" :size="22" /></span>
         <span class="tt__label">{{ t.label }}</span>

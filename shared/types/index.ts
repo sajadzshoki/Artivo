@@ -132,6 +132,60 @@ export interface PricingConfig {
   addOns: AddOnService[]
   /** سقف نسبت ابعاد سفارشی (عرض ÷ ارتفاع) برای جلوگیری از مقادیر بی‌معنا */
   customMaxRatio: number
+  /** ضریبِ بازنویسی‌شده‌ی پریست‌های سایز توسط ادمین (presetId → ضریب) */
+  sizePresetMultipliers?: Record<string, number>
+}
+
+// ─── Auth & Accounts (Phase 5) ─────────────────────────────────
+
+export type UserRole = 'client' | 'creative' | 'admin'
+
+export interface ClientProfile {
+  brandName: string
+  city: string
+  website: string
+  bio: string
+  preferredCategories: string[]
+}
+
+/** نمای عمومی کاربر — هرگز hash رمز و داده‌های حساس ندارد */
+export interface PublicUser {
+  id: string
+  name: string
+  email: string
+  mobile: string
+  roles: UserRole[]
+  mobileVerified: boolean
+  hasPassword: boolean
+  clientProfile: ClientProfile
+  creativeId: string | null
+  createdAt: string
+}
+
+export interface OverlayTaxonomyItem {
+  id: string
+  label: string
+  icon?: string
+}
+
+/** هم‌پوشانی عمومی داده‌ی استاتیک — تغییرات ادمین/جامعه روی داده‌ی استاتیک */
+export interface PublicOverlay {
+  closedJobIds: string[]
+  deletedJobIds: string[]
+  hiddenSpotIds: string[]
+  featuredSpotIds: string[]
+  hiddenServiceIds: string[]
+  serviceOverrides: Record<string, Partial<CreativeService>>
+  createdServices: CreativeService[]
+  communityCreatives: Creative[]
+  creativeOverrides: Record<string, Partial<Creative>>
+  jobOverrides: Record<string, { title?: string; urgent?: boolean }>
+  spotOverrides: Record<string, { name?: string; city?: string; bestTime?: string }>
+  taxonomies: {
+    serviceCategories?: OverlayTaxonomyItem[]
+    photoCategories?: OverlayTaxonomyItem[]
+    creativeKinds?: OverlayTaxonomyItem[]
+  }
 }
 
 // ─── Creatives · Marketplace ─────────────────────────────────

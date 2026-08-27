@@ -11,7 +11,14 @@ import { useJobProposals } from '~/composables/useJobProposals'
 // جزئیات پروژه‌ی باز — بریف کامل + ارسال پیشنهاد
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
-const job = computed(() => getJob(String(route.params.id)))
+// وضعیت ادمین (بسته/متوقف/حذف‌شده) + وصله‌ی عنوان/فوریت از هم‌پوشانی
+const { overlay } = useOverlay()
+const job = computed(() => {
+  const base = getJob(String(route.params.id))
+  if (!base) return undefined
+  if (overlay.value.closedJobIds.includes(base.id) || overlay.value.deletedJobIds.includes(base.id)) return undefined
+  return { ...base, ...(overlay.value.jobOverrides[base.id] ?? {}) }
+})
 
 if (!job.value) {
   throw createError({ statusCode: 404, message: 'پروژه پیدا نشد', fatal: false })

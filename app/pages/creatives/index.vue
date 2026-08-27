@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import type { Creative, CreativeKind, ServiceCategory } from '#shared/types'
-import { creatives } from '#shared/data/content'
 import { serviceCategoryLabels } from '#shared/config/service-categories'
+// خلاق‌ها از لایه‌ی هم‌پوشانی: پروفایل‌های جامعه + وصله‌های ادمین
+const { allCreatives: creativesList, overlay } = useOverlay()
+const creatives = creativesList
 
 // ─────────────────────────────────────────────────────────────
 // خلاق‌ها — جست‌وجو + فیلتر نوع / دسته / شهر
@@ -16,27 +18,32 @@ const city = ref('all')
 
 onMounted(() => { setTimeout(() => { loading.value = false }, 550) })
 
-const kindOptions = [
-  { value: 'all', label: 'همه' },
-  { value: 'designer', label: 'طراحان گرافیک' },
-  { value: 'photographer', label: 'عکاس‌ها' },
-]
+// برچسب انواع خلاق از تاکسونومی ادمین (fallback: برچسب ثابت)
+const kindOptions = computed(() => {
+  const kinds = overlay.value.taxonomies.creativeKinds
+  const labelOf = (id: string) => kinds?.find(k => k.id === id)?.label
+  return [
+    { value: 'all', label: 'همه' },
+    { value: 'designer', label: labelOf('designer') ?? 'طراحان گرافیک' },
+    { value: 'photographer', label: labelOf('photographer') ?? 'عکاس‌ها' },
+  ]
+})
 
 const categoryOptions = computed(() => {
   const set = new Map<string, string>()
-  const pool = kind.value === 'all' ? creatives : creatives.filter(c => c.kind === kind.value)
+  const pool = kind.value === 'all' ? creatives.value : creatives.value.filter(c => c.kind === kind.value)
   for (const c of pool) for (const cat of c.categories) if (!set.has(cat)) set.set(cat, serviceCategoryLabels[cat as ServiceCategory])
   return [{ value: 'all', label: 'همه‌ی دسته‌ها' }, ...[...set.entries()].map(([value, label]) => ({ value, label }))]
 })
 
 const cityOptions = computed(() => {
   const set = new Set<string>()
-  for (const c of creatives) set.add(c.city)
+  for (const c of creatives.value) set.add(c.city)
   return [{ value: 'all', label: 'همه‌ی شهرها' }, ...[...set].map(c => ({ value: c, label: c }))]
 })
 
 const filtered = computed<Creative[]>(() => {
-  let list = creatives
+  let list = creatives.value
   if (kind.value !== 'all') list = list.filter(c => c.kind === kind.value)
   if (category.value !== 'all') list = list.filter(c => c.categories.includes(category.value as ServiceCategory))
   if (city.value !== 'all') list = list.filter(c => c.city === city.value)

@@ -3,7 +3,7 @@ import { homeStats } from '#shared/data/content'
 
 // هیروی ادیتوریال — تیتر درشت، CTA دوتایی و تصویر شاخص
 const { config } = usePricing()
-const minPrice = Math.min(...Object.values(config.basePrices))
+const minPrice = computed(() => Math.min(...Object.values(config.value.basePrices)))
 </script>
 
 <template>

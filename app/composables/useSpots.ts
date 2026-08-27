@@ -1,5 +1,6 @@
 import type { PhotoSpot, SpotPhoto } from '#shared/types'
 import { photoSpots } from '#shared/data/spots'
+import { useOverlay } from './useOverlay'
 import { haversineKm, type LatLng } from '#shared/utils/geo'
 
 // ─────────────────────────────────────────────────────────────
@@ -58,9 +59,20 @@ export function useSpots() {
     }, { deep: true })
   }
 
+  // هم‌پوشانی ادمین: مخفی‌ها حذف، وصله‌های نام/شهر/زمان، ویژه‌ها اول
+  const { overlay } = useOverlay()
+
   /** همه‌ی لوکیشن‌ها — افزوده‌های کاربر اول؛ قبل از mount فقط استاتیک (بدون mismatch) */
-  const all = computed<PhotoSpot[]>(() =>
-    ready.value ? [...userSpots.value, ...photoSpots] : photoSpots)
+  const all = computed<PhotoSpot[]>(() => {
+    const base = ready.value ? [...userSpots.value, ...photoSpots] : [...photoSpots]
+    const o = overlay.value
+    const patched = base
+      .filter(s => !o.hiddenSpotIds.includes(s.id))
+      .map(s => ({ ...s, ...(o.spotOverrides[s.id] ?? {}) }))
+    patched.sort((a, b) =>
+      Number(o.featuredSpotIds.includes(b.id)) - Number(o.featuredSpotIds.includes(a.id)))
+    return patched
+  })
 
   function getById(id: string): PhotoSpot | undefined {
     return all.value.find(s => s.id === id)

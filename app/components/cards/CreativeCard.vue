@@ -19,7 +19,8 @@ const fa = new Intl.NumberFormat('fa-IR')
 
     <span class="cc__body">
       <span class="cc__head">
-        <img :src="creative.avatar" :alt="creative.name" class="cc__avatar" loading="lazy" width="44" height="44">
+        <img v-if="creative.avatar" :src="creative.avatar" :alt="creative.name" class="cc__avatar" loading="lazy" width="44" height="44">
+        <span v-else class="cc__avatar cc__avatar--letter">{{ creative.name.charAt(0) }}</span>
         <span class="cc__id">
           <span class="cc__name">{{ creative.name }}</span>
           <span class="cc__role">{{ creative.role }}</span>
@@ -99,6 +100,13 @@ const fa = new Intl.NumberFormat('fa-IR')
   object-fit: cover;
   border: 2px solid var(--paper);
   box-shadow: var(--shadow-soft);
+}
+.cc__avatar--letter {
+  display: grid;
+  place-items: center;
+  background: var(--bg-deep);
+  color: var(--ink-soft);
+  font-weight: 900;
   flex-shrink: 0;
 }
 .cc__id { display: grid; min-width: 0; }

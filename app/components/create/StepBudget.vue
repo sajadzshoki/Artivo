@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { pricingConfig } from '#shared/services/pricing'
+// کانفیگ زنده از موتور مرکزی (تغییرات ادمین بدون deploy اعمال می‌شود)
+const { config: pricingConfig } = usePricing()
 import { toEnDigits } from '#shared/utils/format'
 
 // گام ۶ — بودجه و تحویل: فوریت، مهلت، پیچیدگی، سرویس‌های اختیاری و برآورد

@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import type { Creative, CreativeService, PortfolioItem } from '#shared/types'
 import { serviceCategoryLabels, serviceCategoryIcons, serviceCategoryToProjectType } from '#shared/config/service-categories'
-import { getService, servicesOf } from '#shared/data/services'
-import { creativesById, getPortfolioItem } from '#shared/data/portfolio'
+import { servicesOf } from '#shared/data/services'
+import { getPortfolioItem } from '#shared/data/portfolio'
+// سرویس/خلاق از لایه‌ی هم‌پوشانی (سازگار با تغییرهای ادمین و سرویس‌های تازه)
+const { serviceById, creativeById } = useOverlay()
 import { reviewsOf } from '#shared/data/reviews'
 
 // ─────────────────────────────────────────────────────────────
 // صفحه‌ی سرویس — خدمت قابل‌سفارش یک خلاق با مثال‌های واقعی
 // ─────────────────────────────────────────────────────────────
 const route = useRoute()
-const service = computed(() => getService(String(route.params.id)))
-const creative = computed(() => (service.value ? creativesById().get(service.value.creativeId) : undefined))
+const service = computed(() => serviceById(String(route.params.id)))
+const creative = computed(() => (service.value ? creativeById(service.value.creativeId) : undefined))
 
 if (!service.value || !creative.value) {
   throw createError({ statusCode: 404, message: 'سرویس پیدا نشد', fatal: false })

@@ -1,10 +1,12 @@
 <script setup lang="ts">
 // گام ۲ — اندازه و فرمت (پریست‌ها + ابعاد سفارشی + چاپ/دیجیتال)
 import { projectTypeMap, sizeConfigs } from '#shared/config/project-types'
-import { customAreaMultiplier } from '#shared/services/pricing'
+import { customAreaMultiplier, effectiveSizePresets } from '#shared/services/pricing'
 import { toEnDigits } from '#shared/utils/format'
 
 const { state } = useProjectRequest()
+// ضرایب پریست با بازنویسی ادمین (در صورت وجود) نشان داده می‌شوند
+const { config: pricingCfg } = usePricing()
 
 const customOpen = ref(false)
 const wStr = ref('')
@@ -14,8 +16,9 @@ const cfg = computed(() => state.value.type ? sizeConfigs[state.value.type] : nu
 const fa = new Intl.NumberFormat('fa-IR')
 
 const visiblePresets = computed(() => {
-  if (!cfg.value) return []
-  return cfg.value.presets.filter(p => !p.medium || !state.value.size.medium || p.medium === state.value.size.medium)
+  if (!state.value.type) return []
+  const presets = effectiveSizePresets(state.value.type, pricingCfg.value.sizePresetMultipliers)
+  return presets.filter(p => !p.medium || !state.value.size.medium || p.medium === state.value.size.medium)
 })
 
 function setMedium(m: 'print' | 'digital') {

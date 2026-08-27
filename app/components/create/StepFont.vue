@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { fontPairings } from '#shared/config/font-pairings'
+// ترکیب‌های فونت از کاتالوگ زنده (مدیریت از پنل ادمین)
+const { catalog } = usePricing()
+const fontPairings = computed(() => catalog.value.fontPairings)
 
 // گام ۴ — استایل فونت: ترکیب‌های واقعی فارسی + لاتین
 const { state } = useProjectRequest()
@@ -8,7 +10,7 @@ function choose(id: string) {
   state.value.fontPairingId = state.value.fontPairingId === id ? null : id
 }
 
-function pairStyle(p: (typeof fontPairings)[number]) {
+function pairStyle(p: { headingFamily: string; headingWeight: number; bodyFamily: string; latinFamily: string }) {
   return {
     '--ph': p.headingFamily,
     '--ph-w': p.headingWeight,

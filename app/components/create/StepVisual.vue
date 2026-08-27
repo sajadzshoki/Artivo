@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { colorPalettes, paletteCategories } from '#shared/config/palettes'
+import { paletteCategories } from '#shared/config/palettes'
+// پالت‌ها از کاتالوگ زنده (مدیریت از پنل ادمین)
+const { catalog } = usePricing()
+const colorPalettes = computed(() => catalog.value.palettes)
 
 // گام ۳ — جهت بصری: پالت آماده یا رنگ‌های دلخواه
 const { state } = useProjectRequest()
@@ -7,8 +10,8 @@ const { state } = useProjectRequest()
 const category = ref('all')
 
 const filtered = computed(() => {
-  if (category.value === 'all') return colorPalettes
-  return colorPalettes.filter(p => p.category === category.value)
+  if (category.value === 'all') return colorPalettes.value
+  return colorPalettes.value.filter(p => p.category === category.value)
 })
 
 const catOptions = [
@@ -35,7 +38,7 @@ const preview = computed(() => {
       ink: state.value.visual.customSecondary,
     }
   }
-  const p = colorPalettes.find(x => x.id === state.value.visual.paletteId)
+  const p = colorPalettes.value.find(x => x.id === state.value.visual.paletteId)
   if (!p) return null
   return { bg: p.colors[0], sub: p.colors[1], accent: p.colors[2], ink: p.colors[3] }
 })

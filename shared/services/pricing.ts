@@ -27,17 +27,33 @@ export function customAreaMultiplier(width: number, height: number, unit: 'cm' |
   return customAreaTiers.find(t => area <= t.maxArea)?.multiplier ?? 1
 }
 
-export function getSizeMultiplier(state: ProjectRequestState['size'], typeId: ProjectTypeId): { factor: number; detail: string } {
+export function getSizeMultiplier(
+  state: ProjectRequestState['size'],
+  typeId: ProjectTypeId,
+  sizeOverrides?: Record<string, number>,
+): { factor: number; detail: string } {
   const cfg = sizeConfigs[typeId]
   if (state.presetId) {
     const preset = cfg.presets.find(p => p.id === state.presetId)
-    if (preset) return { factor: preset.multiplier, detail: preset.label }
+    if (preset) {
+      // ضریبِ ادمین (در صورت وجود) بر پریست استاتیک برتری دارد
+      const factor = sizeOverrides?.[preset.id] ?? preset.multiplier
+      return { factor, detail: preset.label }
+    }
   }
   if (state.custom.width && state.custom.height) {
     const f = customAreaMultiplier(state.custom.width, state.custom.height, state.custom.unit)
     return { factor: f, detail: `ابعاد سفارشی ${state.custom.width}×${state.custom.height}` }
   }
   return { factor: 1, detail: 'پیش‌فرض' }
+}
+
+/** پریست‌های سایز با اعمال ضرایب ادمین — برای نمایش در گام اندازه */
+export function effectiveSizePresets(typeId: ProjectTypeId, sizeOverrides?: Record<string, number>) {
+  return sizeConfigs[typeId].presets.map(p => ({
+    ...p,
+    multiplier: sizeOverrides?.[p.id] ?? p.multiplier,
+  }))
 }
 
 export function calculateEstimate(
@@ -52,7 +68,7 @@ export function calculateEstimate(
   const base = config.basePrices[state.type]
   lines.push({ id: 'base', label: 'قیمت پایه', detail: 'طبق نوع پروژه', amount: base, kind: 'base' })
 
-  const size = getSizeMultiplier(state.size, state.type)
+  const size = getSizeMultiplier(state.size, state.type, config.sizePresetMultipliers)
   if (size.factor !== 1) {
     lines.push({ id: 'size', label: 'اندازه و فرمت', detail: `${size.detail} · ضریب`, factor: size.factor, kind: 'multiplier' })
   }

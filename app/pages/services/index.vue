@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import type { CreativeKind, ServiceCategory } from '#shared/types'
-import { creativeServices } from '#shared/data/services'
-import { creativesById } from '#shared/data/portfolio'
 import { serviceCategoryLabels } from '#shared/config/service-categories'
+// سرویس‌ها از لایه‌ی هم‌پوشانی (تغییرهای ادمین + سرویس‌های تازه بدون deploy)
+const { services: overlayServices, allCreatives } = useOverlay()
 
 // ─────────────────────────────────────────────────────────────
 // مارکت‌پلیس سرویس‌ها — خدمات قابل‌سفارش خلاق‌ها
@@ -22,19 +22,21 @@ const kindOptions = [
   { value: 'photographer', label: 'خدمات عکاس‌ها' },
 ]
 
+const creativeKind = (id: string) => allCreatives.value.find(c => c.id === id)
+
 const categoryOptions = computed(() => {
   const set = new Map<string, string>()
   const pool = kind.value === 'all'
-    ? creativeServices
-    : creativeServices.filter(s => creativesById().get(s.creativeId)?.kind === kind.value)
+    ? overlayServices.value
+    : overlayServices.value.filter(s => creativeKind(s.creativeId)?.kind === kind.value)
   for (const s of pool) if (!set.has(s.category)) set.set(s.category, serviceCategoryLabels[s.category as ServiceCategory])
   return [{ value: 'all', label: 'همه‌ی دسته‌ها' }, ...[...set.entries()].map(([value, label]) => ({ value, label }))]
 })
 
 const filtered = computed(() => {
-  let list = creativeServices
+  let list = overlayServices.value
   if (kind.value !== 'all') {
-    list = list.filter(s => creativesById().get(s.creativeId)?.kind === kind.value)
+    list = list.filter(s => creativeKind(s.creativeId)?.kind === kind.value)
   }
   if (category.value !== 'all') list = list.filter(s => s.category === category.value)
   const q = query.value.trim()

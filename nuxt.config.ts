@@ -19,17 +19,25 @@ export default defineNuxtConfig({
   },
 
   // ── تنظیمات زمان اجرا ──
-  // کلیدهای Neshan از متغیرهای محیطی می‌آیند (.env) — هرگز هاردکد نمی‌شوند.
-  // NUXT_NESHAN_API_KEY        → فقط سمت سرور (REST API نشان؛ ژئوکد معکوس)
-  // NUXT_PUBLIC_NESHAN_MAP_KEY → کلید وب SDK (خالی بودن آن یعنی نقشه با
-  //                               جایگزینِ بدون‌کلید اجرا می‌شود)
+  // کلیدها فقط از متغیرهای محیطی می‌آیند (.env) — هرگز هاردکد نمی‌شوند.
+  // NUXT_NESHAN_API_KEY          → فقط سمت سرور (REST API نشان)
+  // NUXT_PUBLIC_NESHAN_MAP_KEY   → کلید وب SDK نقشه
+  // NUXT_KAVENEGAR_API_KEY       → فقط سمت سرور (ارسال OTP در production)
+  // NUXT_KAVENEGAR_OTP_TEMPLATE  → نام قالب تأییدشده در کاوه‌نگار
+  // NUXT_KAVENEGAR_SENDER        → اختیاری (خط ارسال)
+  // NUXT_PUBLIC_AUTH_DEV_MODE    → نمایش راهنمای حالت توسعه (OTP 1111)
   runtimeConfig: {
     neshanApiKey: '',
+    kavenegarApiKey: '',
+    kavenegarOtpTemplate: '',
+    kavenegarSender: '',
     public: {
       neshanMapKey: '',
       neshanProvider: 'neshan',
       neshanSdkUrl: 'https://static.neshan.org/maps/neshan-map-v1.1.0.js',
       neshanSdkCss: 'https://static.neshan.org/maps/neshan-map-v1.1.0.css',
+      // ⚠️ فقط توسعه — با nuxt build خودکار false می‌شود
+      authDevMode: process.env.NODE_ENV !== 'production',
     },
   },
 
